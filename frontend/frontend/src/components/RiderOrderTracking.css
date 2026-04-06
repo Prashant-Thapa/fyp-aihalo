@@ -1,0 +1,507 @@
+/* RiderOrderTracking Component Styles */
+
+.rider-order-tracking {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.tracking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.tracking-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.order-count {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.count-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.order-count p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Loading & Empty States */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.loading-state p,
+.empty-state p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.empty-state p:first-child {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.sub-text {
+  font-size: 14px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.error-state {
+  padding: 20px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  color: #721c24;
+}
+
+.error-state p {
+  margin-bottom: 15px;
+}
+
+.error-state button {
+  background: #721c24;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.error-state button:hover {
+  background: #5a151d;
+}
+
+/* Orders List */
+.orders-list {
+  display: grid;
+  gap: 15px;
+}
+
+.order-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Order Header */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.order-id {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.order-id .label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.order-id .id {
+  font-size: 20px;
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+.order-status {
+  padding: 6px 12px;
+  border-left: 3px solid;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Order Details */
+.order-details {
+  margin-bottom: 15px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.detail-row .label {
+  color: #666;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.detail-row .value {
+  color: #333;
+  text-align: right;
+  flex: 1;
+  padding-left: 10px;
+}
+
+.value.address {
+  font-size: 13px;
+  color: #555;
+}
+
+.value.price {
+  font-weight: bold;
+  color: #198754;
+  font-size: 15px;
+}
+
+/* Distance Badge */
+.distance-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border-left: 3px solid #667eea;
+}
+
+.distance-badge .distance {
+  font-weight: bold;
+  font-size: 16px;
+  color: #667eea;
+}
+
+.distance-badge .time {
+  font-size: 12px;
+  color: #666;
+  background: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+/* Order Items Preview */
+.order-items-preview {
+  margin-bottom: 15px;
+}
+
+.order-items-preview .label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.item-badge {
+  background: white;
+  border: 1px solid #dee2e6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.item-badge.more {
+  background: #e2e3e5;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Order Actions */
+.order-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view {
+  background: #0d6efd;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #0b5ed7;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+}
+
+.btn-navigate {
+  background: white;
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+}
+
+.btn-navigate:hover {
+  background: #f0f6ff;
+  border-color: #0b5ed7;
+}
+
+/* Order Detail Modal */
+.order-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-content h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 22px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.detail-section p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.detail-section strong {
+  color: #333;
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Items Table */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.items-table th {
+  background: #f0f0f0;
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.items-table td {
+  padding: 10px;
+  border-bottom: 1px solid #dee2e6;
+  color: #555;
+}
+
+.items-table tr:hover {
+  background: #f8f9fa;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.total strong:last-child {
+  color: #198754;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.btn-primary {
+  background: #198754;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background: #157347;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+}
+
+.btn-secondary {
+  background: #e9ecef;
+  color: #333;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-secondary:hover {
+  background: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .rider-order-tracking {
+    padding: 15px;
+  }
+
+  .tracking-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .order-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .modal-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-card {
+    padding: 15px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .detail-row .value {
+    text-align: left;
+  }
+
+  .distance-badge {
+    gap: 8px;
+  }
+}

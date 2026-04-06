@@ -1,0 +1,13 @@
+.dist
+.git
+backend/backend/.env
+frontend/frontend/.env
+
+backend/backend/node_modules
+frontend/frontend/dist
+backend/backend/dist
+frontend/frontend/.vite
+
+frontend/frontend/node_modules
+.env
+.vscode

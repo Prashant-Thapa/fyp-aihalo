@@ -1,0 +1,274 @@
+/* RiderMap Component Styles */
+
+.rider-map-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.rider-map-container.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #666;
+  font-size: 16px;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.map-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.confirmed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.rider_assigned {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
+.status-badge.picked_up {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-badge.on_the_way {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.status-badge.delivered {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* Map Area */
+.map-area {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  height: 350px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #666;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.map-placeholder {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.coordinates-info {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.coordinates-info p {
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Distance Information Cards */
+.distance-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.distance-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.distance-card:hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+}
+
+.distance-card.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.distance-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.distance-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #007bff;
+}
+
+.distance-card.highlight .distance-value {
+  color: #fff;
+}
+
+.location-name,
+.estimated-time {
+  font-size: 13px;
+  color: #666;
+  margin: 5px 0 0 0;
+}
+
+.distance-card.highlight .location-name,
+.distance-card.highlight .estimated-time {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Route Summary */
+.route-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 25px;
+  margin-top: 25px;
+}
+
+.route-summary h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.route-step {
+  display: flex;
+  align-items: flex-start;
+  margin: 15px 0;
+}
+
+.step-icon {
+  font-size: 32px;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #dee2e6;
+}
+
+.step-icon.store {
+  background: #fff3cd;
+  border-color: #ffc107;
+  font-size: 24px;
+}
+
+.step-icon.rider {
+  background: #cfe2ff;
+  border-color: #0d6efd;
+  font-size: 24px;
+}
+
+.step-icon.delivery {
+  background: #d1e7dd;
+  border-color: #198754;
+  font-size: 24px;
+}
+
+.step-content h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.step-content p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.route-connector {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(180deg, #dee2e6 0%, transparent 100%);
+  margin: 0 20px;
+  margin-left: 25px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .map-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .distance-info {
+    grid-template-columns: 1fr;
+  }
+
+  .map-area {
+    height: 250px;
+  }
+
+  .distance-value {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rider-map-container {
+    padding: 15px;
+  }
+
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 20px;
+    margin-right: 15px;
+  }
+
+  .route-connector {
+    margin-left: 20px;
+  }
+}

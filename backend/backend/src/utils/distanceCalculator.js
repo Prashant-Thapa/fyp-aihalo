@@ -1,0 +1,62 @@
+/**
+ * Distance Calculator Utility
+ * Provides Haversine formula for calculating distance between two geographic points
+ */
+
+/**
+ * Calculate distance between two geographic coordinates using Haversine formula
+ * @param {number} lat1 - Latitude of point 1
+ * @param {number} lon1 - Longitude of point 1
+ * @param {number} lat2 - Latitude of point 2
+ * @param {number} lon2 - Longitude of point 2
+ * @returns {number} Distance in kilometers
+ */
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
+/**
+ * Convert degrees to radians
+ * @param {number} value - Angle in degrees
+ * @returns {number} Angle in radians
+ */
+const toRad = (value) => (value * Math.PI) / 180;
+
+/**
+ * Calculate distance with rider details
+ * Used for sorting riders by distance
+ * @param {number} lat1
+ * @param {number} lon1
+ * @param {number} lat2
+ * @param {number} lon2
+ * @returns {object} Object containing distance and other metrics
+ */
+const calculateDistanceWithMetrics = (lat1, lon1, lat2, lon2) => {
+  const distanceKm = calculateDistance(lat1, lon1, lat2, lon2);
+  const distanceM = distanceKm * 1000;
+  const estimatedTimeMinutes = Math.ceil(distanceKm / 20); // Assuming avg speed of 20 km/h
+
+  return {
+    distanceKm: parseFloat(distanceKm.toFixed(2)),
+    distanceM: parseFloat(distanceM.toFixed(0)),
+    estimatedTimeMinutes,
+  };
+};
+
+module.exports = {
+  calculateDistance,
+  toRad,
+  calculateDistanceWithMetrics,
+};
