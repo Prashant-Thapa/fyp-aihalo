@@ -286,8 +286,11 @@ const updateRiderAvailability = async (req, res) => {
       });
     }
 
-    const updateData = {};
-    if (isAvailable !== undefined) updateData.isAvailable = isAvailable;
+    const updateData = { lastSeen: new Date() };
+    if (isAvailable !== undefined) {
+      updateData.isAvailable = isAvailable;
+      updateData.isOnline = isAvailable; // Keep isOnline in sync — critical for production where socket may not be connected
+    }
     if (latitude) updateData.latitude = latitude;
     if (longitude) updateData.longitude = longitude;
 

@@ -274,7 +274,7 @@ const initSocket = (server) => {
   setInterval(async () => {
     try {
       const { Op } = require("sequelize");
-      const cutoff = new Date(Date.now() - 15000); // 15 seconds stale
+      const cutoff = new Date(Date.now() - 60000); // 60 seconds stale (more forgiving for production network latency)
       const staleRiders = await Rider.findAll({
         where: {
           isOnline: true,
