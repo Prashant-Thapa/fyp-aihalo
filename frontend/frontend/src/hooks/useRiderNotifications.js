@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
 
 const SOCKET_URL =
-  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:3000";
+  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 /**
  * Hook for handling real-time rider notifications

@@ -7,7 +7,7 @@ import { getStockAlerts, markAlertRead, markAllAlertsRead } from "../../api/stoc
 import { useAuth } from "../../context/AuthContext";
 import io from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div className="bg-white rounded-xl p-6 shadow-sm">

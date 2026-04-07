@@ -9,7 +9,7 @@ import {
 import { getMyStoreLocations } from "../../api/storeLocation.api";
 
 const API_BASE_URL =
-  import.meta.env.VITE_IMAGE_BASE_URL || "http://localhost:3000";
+  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);

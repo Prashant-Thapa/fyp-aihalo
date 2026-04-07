@@ -122,6 +122,7 @@ const RiderDashboard = () => {
         getRiderProfile(),
         getRiderOrders(),
       ]);
+      console.log("Fetched rider profile:", profileRes);
       if (profileRes.success) setProfile(profileRes.data);
       if (ordersRes.success) setOrders(ordersRes.data);
     } catch (err) {
@@ -132,10 +133,13 @@ const RiderDashboard = () => {
   };
 
   const handleToggleAvailability = async () => {
+    console.log("this is profile", profile);
     if (!profile) return;
     try {
       setToggling(true);
-      const response = await updateRiderAvailability({ isAvailable: !profile.isAvailable });
+      const response = await updateRiderAvailability({
+        isAvailable: !profile.isAvailable,
+      });
       if (response.success) {
         const newAvailability = !profile.isAvailable;
         setProfile({ ...profile, isAvailable: newAvailability });
@@ -187,7 +191,12 @@ const RiderDashboard = () => {
             (o) => !["delivered", "cancelled"].includes(o.status),
           );
           if (activeOrder && profile?.id) {
-            socketService.sendRiderLocationUpdate(activeOrder.id, profile.id, lat, lng);
+            socketService.sendRiderLocationUpdate(
+              activeOrder.id,
+              profile.id,
+              lat,
+              lng,
+            );
           }
         },
         (err) => console.error("GPS error:", err),
@@ -195,7 +204,9 @@ const RiderDashboard = () => {
       );
       watchIdRef.current = id;
       setLiveGPS(true);
-      showNotification("✓ Live GPS active — your location is being broadcast to customers!");
+      showNotification(
+        "✓ Live GPS active — your location is being broadcast to customers!",
+      );
     }
   };
 
@@ -226,17 +237,20 @@ const RiderDashboard = () => {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Rider Dashboard</h1>
-          <p className="text-gray-500 mt-1">Welcome back, {profile?.user?.name}!</p>
+          <p className="text-gray-500 mt-1">
+            Welcome back, {profile?.user?.name}!
+          </p>
         </div>
 
         {/* Availability Toggle */}
         <button
           onClick={handleToggleAvailability}
           disabled={toggling}
-          className={`flex items-center gap-3 px-5 py-2.5 rounded-xl font-semibold transition-all ${profile?.isAvailable
+          className={`flex items-center gap-3 px-5 py-2.5 rounded-xl font-semibold transition-all ${
+            profile?.isAvailable
               ? "bg-green-100 text-green-700 hover:bg-green-200"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+          }`}
         >
           {profile?.isAvailable ? (
             <>
@@ -260,7 +274,9 @@ const RiderDashboard = () => {
               <Package size={22} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {orders.length}
+              </p>
               <p className="text-xs text-gray-500">Total Orders</p>
             </div>
           </div>
@@ -271,7 +287,9 @@ const RiderDashboard = () => {
               <Clock size={22} className="text-yellow-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{activeOrders.length}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {activeOrders.length}
+              </p>
               <p className="text-xs text-gray-500">Active Orders</p>
             </div>
           </div>
@@ -282,7 +300,9 @@ const RiderDashboard = () => {
               <CheckCircle size={22} className="text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{completedOrders.length}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {completedOrders.length}
+              </p>
               <p className="text-xs text-gray-500">Completed</p>
             </div>
           </div>
@@ -293,7 +313,9 @@ const RiderDashboard = () => {
               <Truck size={22} className="text-[#0B4E3C]" />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900">{profile?.vehicleType}</p>
+              <p className="text-xl font-bold text-gray-900">
+                {profile?.vehicleType}
+              </p>
               <p className="text-xs text-gray-500">Vehicle</p>
             </div>
           </div>
@@ -303,25 +325,38 @@ const RiderDashboard = () => {
       {/* Location + Live GPS row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {/* Current location card */}
-        <div className={`rounded-2xl p-4 border flex items-center justify-between ${profile?.latitude ? "bg-blue-50 border-blue-200" : "bg-amber-50 border-amber-200"
-          }`}>
+        <div
+          className={`rounded-2xl p-4 border flex items-center justify-between ${
+            profile?.latitude
+              ? "bg-blue-50 border-blue-200"
+              : "bg-amber-50 border-amber-200"
+          }`}
+        >
           <div className="flex items-center gap-3">
-            <MapPin className={profile?.latitude ? "text-blue-600" : "text-amber-600"} size={20} />
+            <MapPin
+              className={profile?.latitude ? "text-blue-600" : "text-amber-600"}
+              size={20}
+            />
             <div>
               {profile?.latitude ? (
                 <>
-                  <p className="font-semibold text-blue-900 text-sm">Your Location</p>
+                  <p className="font-semibold text-blue-900 text-sm">
+                    Your Location
+                  </p>
                   <p className="text-xs text-blue-700 font-mono">
                     {currentCoords
                       ? `${currentCoords.lat.toFixed(5)}, ${currentCoords.lng.toFixed(5)}`
-                      : `${parseFloat(profile.latitude).toFixed(5)}, ${parseFloat(profile.longitude).toFixed(5)}`
-                    }
+                      : `${parseFloat(profile.latitude).toFixed(5)}, ${parseFloat(profile.longitude).toFixed(5)}`}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="font-semibold text-amber-900 text-sm">Location Not Set</p>
-                  <p className="text-xs text-amber-700">You won't receive orders</p>
+                  <p className="font-semibold text-amber-900 text-sm">
+                    Location Not Set
+                  </p>
+                  <p className="text-xs text-amber-700">
+                    You won't receive orders
+                  </p>
                 </>
               )}
             </div>
@@ -336,15 +371,27 @@ const RiderDashboard = () => {
         </div>
 
         {/* Live GPS broadcast card */}
-        <div className={`rounded-2xl p-4 border flex items-center justify-between ${liveGPS ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"
-          }`}>
+        <div
+          className={`rounded-2xl p-4 border flex items-center justify-between ${
+            liveGPS
+              ? "bg-green-50 border-green-300"
+              : "bg-gray-50 border-gray-200"
+          }`}
+        >
           <div className="flex items-center gap-3">
-            <Navigation className={liveGPS ? "text-green-600" : "text-gray-500"} size={20} />
+            <Navigation
+              className={liveGPS ? "text-green-600" : "text-gray-500"}
+              size={20}
+            />
             <div>
-              <p className={`font-semibold text-sm ${liveGPS ? "text-green-900" : "text-gray-700"}`}>
+              <p
+                className={`font-semibold text-sm ${liveGPS ? "text-green-900" : "text-gray-700"}`}
+              >
                 Live GPS Broadcast
               </p>
-              <p className={`text-xs ${liveGPS ? "text-green-700" : "text-gray-500"}`}>
+              <p
+                className={`text-xs ${liveGPS ? "text-green-700" : "text-gray-500"}`}
+              >
                 {liveGPS
                   ? "Broadcasting your location to customers"
                   : "Let customers track you in real-time"}
@@ -353,12 +400,15 @@ const RiderDashboard = () => {
           </div>
           <button
             onClick={handleToggleLiveGPS}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${liveGPS
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              liveGPS
                 ? "bg-red-100 text-red-700 hover:bg-red-200"
                 : "bg-[#0B4E3C] text-white hover:bg-[#0a4534]"
-              }`}
+            }`}
           >
-            <span className={`inline-block w-2 h-2 rounded-full ${liveGPS ? "bg-red-500 animate-pulse" : "bg-white"}`} />
+            <span
+              className={`inline-block w-2 h-2 rounded-full ${liveGPS ? "bg-red-500 animate-pulse" : "bg-white"}`}
+            />
             {liveGPS ? "Stop GPS" : "Start GPS"}
           </button>
         </div>
@@ -370,7 +420,9 @@ const RiderDashboard = () => {
         {activeOrders.length === 0 ? (
           <div className="text-center py-10">
             <Package size={48} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">No active orders — set yourself Online to receive orders</p>
+            <p className="text-gray-500">
+              No active orders — set yourself Online to receive orders
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -381,7 +433,9 @@ const RiderDashboard = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-bold text-gray-900">Order #{order.id}</h3>
+                    <h3 className="font-bold text-gray-900">
+                      Order #{order.id}
+                    </h3>
                     <span
                       className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[order.status]}`}
                     >
@@ -397,7 +451,10 @@ const RiderDashboard = () => {
                   {/* Customer info */}
                   <div className="flex items-center gap-2">
                     <Package size={14} className="text-gray-400 shrink-0" />
-                    <span><span className="font-medium">Customer:</span> {order.user?.name}</span>
+                    <span>
+                      <span className="font-medium">Customer:</span>{" "}
+                      {order.user?.name}
+                    </span>
                   </div>
                   {/* Customer phone */}
                   {(order.user?.phone || order.rider?.phone) && (
@@ -417,13 +474,17 @@ const RiderDashboard = () => {
                   {/* Delivery address */}
                   <div className="flex items-center gap-2">
                     <MapPin size={14} className="text-red-500 shrink-0" />
-                    <span><span className="font-medium">Deliver to:</span> {order.deliveryAddress}</span>
+                    <span>
+                      <span className="font-medium">Deliver to:</span>{" "}
+                      {order.deliveryAddress}
+                    </span>
                   </div>
                   {/* Customer location coords */}
                   <div className="flex items-center gap-2 font-mono text-xs text-gray-500">
                     <MapPin size={14} className="text-red-400 shrink-0" />
                     <span>
-                      {parseFloat(order.latitude).toFixed(5)}, {parseFloat(order.longitude).toFixed(5)}
+                      {parseFloat(order.latitude).toFixed(5)},{" "}
+                      {parseFloat(order.longitude).toFixed(5)}
                     </span>
                   </div>
                   {/* Store pickup */}
