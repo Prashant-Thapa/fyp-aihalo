@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 const API_URL =
-  import.meta.env.VITE_API_URL?.split("/api")[0] || "http://localhost:5000";
+  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 let socket = null;
 
@@ -12,10 +12,12 @@ export const initSocket = () => {
   if (socket) return socket;
 
   socket = io(API_URL, {
+    transports: ["websocket", "polling"],
+    withCredentials: true,
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
-    reconnectionAttempts: 5,
+    reconnectionAttempts: Infinity,
   });
 
   socket.on("connect", () => {
