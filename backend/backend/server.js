@@ -38,6 +38,7 @@ app.use(
     credentials: true,
   }),
 );
+console.log("CORS configured to allow origin:", process.env.FRONTEND_URL);
 
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
