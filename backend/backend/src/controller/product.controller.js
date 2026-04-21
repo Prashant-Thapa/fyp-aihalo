@@ -234,10 +234,21 @@ const updateProduct = async (req, res) => {
       isActive: isActive !== undefined ? isActive : product.isActive,
     });
 
+    // Reload the product with associations to return fresh data
+    const updatedProduct = await Product.findByPk(product.id, {
+      include: [
+        {
+          model: StoreLocation,
+          as: "storeLocation",
+          attributes: ["id", "name", "address"],
+        },
+      ],
+    });
+
     // Check for low stock alert after update
-    if (product.stock < STOCK_THRESHOLD) {
+    if (updatedProduct.stock < STOCK_THRESHOLD) {
       try {
-        const alerts = await checkAndCreateAlerts([product.id]);
+        const alerts = await checkAndCreateAlerts([updatedProduct.id]);
         for (const alert of alerts) {
           emitStockAlert(alert);
         }
@@ -249,7 +260,7 @@ const updateProduct = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      data: product,
+      data: updatedProduct,
     });
   } catch (err) {
     // Delete uploaded file on error

@@ -6,12 +6,16 @@ const {
   updateRiderStatus,
   updateRiderAvailability,
   getRiderProfile,
+  getRiderProfileByEmail,
   getRiderOrders,
   updateOrderStatus,
   updateRiderLocation,
   checkLocationCoverage,
   acceptOrder,
   rejectOrder,
+  resetRejectedRegistration,
+  updateRiderDocuments,
+  updateRiderDocumentsPublic,
 } = require("../controller/rider.controller");
 const {
   authMiddleware,
@@ -24,6 +28,15 @@ const router = express.Router();
 // Public route for rider registration
 router.post("/register", registerRider);
 
+// Public route to reset rejected registration and re-register
+router.post("/reset-rejected", resetRejectedRegistration);
+
+// Public route to get rider profile by email (for rejected riders updating profile)
+router.get("/profile-by-email", getRiderProfileByEmail);
+
+// Public route to update rider documents (for rejected riders without auth token)
+router.put("/:id/documents-public", updateRiderDocumentsPublic);
+
 // Rider routes
 router.get("/profile", authMiddleware, riderMiddleware, getRiderProfile);
 router.put(
@@ -33,6 +46,8 @@ router.put(
   updateRiderAvailability,
 );
 router.put("/location", authMiddleware, riderMiddleware, updateRiderLocation);
+// Update documents for rejected/pending riders
+router.put("/:id/documents", authMiddleware, riderMiddleware, updateRiderDocuments);
 router.get("/orders", authMiddleware, riderMiddleware, getRiderOrders);
 router.put(
   "/order/:id/status",

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { User } = require("../models/index");
 
@@ -33,8 +34,7 @@ const seedAdmin = async () => {
   }
 };
 
-// Run after a delay to ensure database is connected
-// Increased timeout to 5 seconds to ensure database is fully synced
+
 setTimeout(seedAdmin, 5000);
 
 module.exports = seedAdmin;

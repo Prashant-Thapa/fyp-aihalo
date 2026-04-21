@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, User, Phone, Car, FileText, AlertCircle } from "lucide-react";
+import { MapPin, User, Phone, Car, FileText, AlertCircle, File, User2Icon } from "lucide-react";
 import LocationMap from "../components/LocationMap";
 import { registerRider } from "../api/rider.api";
 import { getAllStoreLocations } from "../api/storeLocation.api";
+
+import {ToastContainer,toast} from 'react-toastify'
+import { uploadPhoto } from "../api/upload.api";
 
 const RiderRegister = () => {
   const navigate = useNavigate();
@@ -15,6 +18,7 @@ const RiderRegister = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
   const [nearbyStores, setNearbyStores] = useState([]);
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -28,6 +32,9 @@ const RiderRegister = () => {
     latitude: "",
     longitude: "",
     storeLocationId: "",
+    profilePhoto: null,
+    licenseFrontPhoto: null,
+    licenseBackPhoto: null,
   });
 
   const vehicleTypes = [
@@ -42,6 +49,27 @@ const RiderRegister = () => {
     getCurrentLocation();
   }, []);
 
+
+  const uploadFile = async (file)=>{
+    try{
+      const response = await uploadPhoto(file);
+      return response
+
+    }
+    catch(err){
+      console.error("Photo upload failed", err);
+    }
+  }
+
+  const removeFile = (file)=>{
+    try{
+
+    }
+    catch(err){
+
+    }
+
+  }
   const fetchStoreLocations = async () => {
     try {
       const response = await getAllStoreLocations();
@@ -122,18 +150,80 @@ const RiderRegister = () => {
     setFormData((prev) => ({ ...prev, storeLocationId: store.id.toString() }));
   };
 
+  // Handle file uploads
+  const handleFileChange = async (e) => {
+    const { name, files } = e.target;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file size
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size exceeds 2MB limit");
+      return;
+    }
+
+    try {
+      // Upload file to server
+      const uploadResult = await uploadPhoto(file);
+
+      if (uploadResult.success) {
+        // Store the URL in formData
+        setFormData((prev) => ({
+          ...prev,
+          [name]: uploadResult.url,
+        }));
+        toast.success("Photo uploaded successfully!");
+      } else {
+        toast.error(uploadResult.message || "Upload failed");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error uploading photo");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    // check email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address. Valid email address should be in the format: example@domain.com");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     if (!formData.storeLocationId) {
-      setError("Please select a store location");
+      toast.error("Please select a store location");
+      return;
+    }
+
+    // phone number should have 10 digits and start with 98 or 97
+    const phoneRegex = /^(98|97)\d{8}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      toast.error("Please enter a valid Nepali phone number starting with 98 or 97. It should have 10 digits in total.");
+      return;
+    }
+
+    // Validate photo uploads
+    if (!formData.profilePhoto) {
+      toast.error("Please upload your passport size photo");
+      return;
+    }
+
+    if (!formData.licenseFrontPhoto) {
+      toast.error("Please upload your license front photo");
+      return;
+    }
+
+    if (!formData.licenseBackPhoto) {
+      toast.error("Please upload your license back photo");
       return;
     }
 
@@ -151,15 +241,20 @@ const RiderRegister = () => {
         latitude: parseFloat(formData.latitude),
         longitude: parseFloat(formData.longitude),
         storeLocationId: parseInt(formData.storeLocationId),
+        profilePhoto: formData.profilePhoto,
+        licenseFrontPhoto: formData.licenseFrontPhoto,
+        licenseBackPhoto: formData.licenseBackPhoto,
       });
 
       if (response.success) {
         setSuccess(
           "Registration submitted successfully! Please wait for admin approval. You can now login."
         );
+        toast.success("Registration successful! Please wait for admin approval. You can now login.");
         setTimeout(() => navigate("/login"), 3000);
       }
     } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed. Please try again.");
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
@@ -174,6 +269,7 @@ const RiderRegister = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick draggable pauseOnHover />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -346,6 +442,27 @@ const RiderRegister = () => {
                   placeholder="+977 98XXXXXXXX"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  <User2Icon className="w-4 h-4" /> 
+                  Passport size photo (max 2MB) *
+                </label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    name="profilePhoto"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B4E3C] focus:border-[#0B4E3C] outline-none"
+                  />
+                  {formData.profilePhoto && (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <span className="text-sm text-green-700">✓ Photo uploaded</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -404,6 +521,48 @@ const RiderRegister = () => {
                   required
                   placeholder="Your driving license number"
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  <File className="w-4 h-4" />
+                  License front photo (max 2MB) *
+                </label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    name="licenseFrontPhoto"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B4E3C] focus:border-[#0B4E3C] outline-none"
+                  />
+                  {formData.licenseFrontPhoto && (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <span className="text-sm text-green-700">✓ Front photo uploaded</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  <File className="w-4 h-4" />
+                  License back photo (max 2MB) *
+                </label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    name="licenseBackPhoto"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0B4E3C] focus:border-[#0B4E3C] outline-none"
+                  />
+                  {formData.licenseBackPhoto && (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <span className="text-sm text-green-700">✓ Back photo uploaded</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

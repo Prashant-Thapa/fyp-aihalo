@@ -55,6 +55,10 @@ const Rider = sequelize.define("Rider", {
     allowNull: false,
     defaultValue: "pending",
   },
+  rejectionReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   isOnline: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
@@ -65,6 +69,18 @@ const Rider = sequelize.define("Rider", {
     allowNull: true,
     defaultValue: DataTypes.NOW,
   },
+    profilePhoto:{
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  licenseFrontPhoto:{
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  licenseBackPhoto:{
+    type: DataTypes.STRING,
+    allowNull: false
+  }
 });
 
 module.exports = Rider;

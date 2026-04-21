@@ -6,7 +6,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Pages
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
+import VerifyEmail from "./pages/VerifyEmail";
+import CreatePassword from "./pages/CreatePassword";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import RiderRegister from "./pages/RiderRegister";
+import UpdateRiderProfile from "./pages/UpdateRiderProfile";
 import Products from "./pages/Products";
 import CartPage from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
@@ -42,8 +47,16 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/create-password" element={<CreatePassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/products" element={<Products />} />
             <Route path="/rider-register" element={<RiderRegister />} />
+            <Route
+              path="/update-rider-profile"
+              element={<UpdateRiderProfile />}
+            />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/payment/failed" element={<PaymentFailed />} />

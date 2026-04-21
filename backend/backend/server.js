@@ -10,6 +10,7 @@ require("./src/config/db");
 // Import routes
 const registerRoute = require("./src/routes/register.route");
 const loginRoute = require("./src/routes/login.route");
+const verificationRoute = require("./src/routes/verification.route");
 const storeLocationRoute = require("./src/routes/storeLocation.route");
 const productRoute = require("./src/routes/product.route");
 const riderRoute = require("./src/routes/rider.route");
@@ -18,6 +19,7 @@ const orderRoute = require("./src/routes/order.route");
 const riderAssignmentRoute = require("./src/routes/riderAssignment.route");
 const stockAlertRoute = require("./src/routes/stockAlert.route");
 const paymentRoute = require("./src/routes/payment.route");
+const uploadPhotoRoute = require("./src/routes/uploadPhoto.route");
 
 // Socket.IO
 const { initSocket } = require("./src/socket/socketHandler");
@@ -61,6 +63,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/user", registerRoute);
 app.use("/api/user", loginRoute);
+app.use("/api/user", verificationRoute);
 app.use("/api/store-locations", storeLocationRoute);
 app.use("/api/products", productRoute);
 app.use("/api/riders", riderRoute);
@@ -69,6 +72,7 @@ app.use("/api/cart", cartRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/stock-alerts", stockAlertRoute);
 app.use("/api/payment", paymentRoute);
+app.use("/api/upload", uploadPhotoRoute);
 
 // Create HTTP server and attach Socket.IO
 const server = http.createServer(app);

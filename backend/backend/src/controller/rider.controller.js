@@ -35,7 +35,13 @@ const registerRider = async (req, res) => {
       latitude,
       longitude,
       storeLocationId,
+      profilePhoto,
+      licenseFrontPhoto,
+      licenseBackPhoto,
     } = req.body;
+
+
+    console.log("this is request body for rider registration", req.body);
 
     // Validate required fields
     if (
@@ -46,7 +52,10 @@ const registerRider = async (req, res) => {
       !licenseNumber ||
       !latitude ||
       !longitude ||
-      !storeLocationId
+      !storeLocationId ||
+      !profilePhoto ||
+      !licenseFrontPhoto ||
+      !licenseBackPhoto
     ) {
       return res.status(400).json({
         success: false,
@@ -114,6 +123,9 @@ const registerRider = async (req, res) => {
       longitude,
       storeLocationId,
       status: "pending",
+      profilePhoto,
+      licenseFrontPhoto,
+      licenseBackPhoto,
     });
 
     return res.status(201).json({
@@ -224,13 +236,21 @@ const getRidersByStoreLocation = async (req, res) => {
 const updateRiderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, rejectionReason } = req.body;
     const adminId = req.user.id;
 
     if (!["approved", "rejected", "pending"].includes(status)) {
       return res.status(400).json({
         success: false,
         message: "Invalid status. Must be 'approved', 'rejected', or 'pending'",
+      });
+    }
+
+    // Rejection reason is required if status is rejected
+    if (status === "rejected" && !rejectionReason) {
+      return res.status(400).json({
+        success: false,
+        message: "Rejection reason is required",
       });
     }
 
@@ -253,6 +273,7 @@ const updateRiderStatus = async (req, res) => {
 
     await rider.update({
       status,
+      rejectionReason: status === "rejected" ? rejectionReason : null,
       isVerified: status === "approved",
     });
 
@@ -801,6 +822,219 @@ const rejectOrder = async (req, res) => {
   }
 };
 
+// Allow rejected rider to reset and re-register with same email
+const resetRejectedRegistration = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    // Find user with this email
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    // Check if user is rider with rejected status
+    const rider = await Rider.findOne({ where: { userId: user.id } });
+    if (!rider || rider.status !== "rejected") {
+      return res.status(400).json({
+        success: false,
+        message: "Only rejected riders can reset their registration",
+      });
+    }
+
+    // Delete the rejected rider record and user account
+    await Rider.destroy({ where: { id: rider.id } });
+    await User.destroy({ where: { id: user.id } });
+
+    return res.status(200).json({
+      success: true,
+      message: "Your account has been reset. You can now re-register with the same email.",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      debug: err.message,
+    });
+  }
+};
+
+// Get rider profile by email (public - for rejected riders to update)
+const getRiderProfileByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+    if (!user || user.role !== "rider") {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    // Find rider profile
+    const rider = await Rider.findOne({
+      where: { userId: user.id },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: StoreLocation,
+          as: "storeLocation",
+          attributes: ["id", "name", "address", "latitude", "longitude", "radius"],
+        },
+      ],
+    });
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider profile not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: rider,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      debug: err.message,
+    });
+  }
+};
+
+// Update rider documents (for rejected riders to resubmit)
+const updateRiderDocuments = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { profilePhoto, licenseFrontPhoto, licenseBackPhoto } = req.body;
+    const userId = req.user.id;
+
+    // Find rider by userId to ensure rider can only update their own documents
+    const rider = await Rider.findOne({ where: { userId } });
+
+    if (!rider || rider.id !== parseInt(id)) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only update your own documents",
+      });
+    }
+
+    // Only rejected or pending riders can update documents
+    if (!["rejected", "pending"].includes(rider.status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Only rejected or pending riders can update documents",
+      });
+    }
+
+    // Update documents and reset status to pending
+    await rider.update({
+      profilePhoto: profilePhoto || rider.profilePhoto,
+      licenseFrontPhoto: licenseFrontPhoto || rider.licenseFrontPhoto,
+      licenseBackPhoto: licenseBackPhoto || rider.licenseBackPhoto,
+      status: "pending", // Reset to pending for re-review
+      rejectionReason: null, // Clear previous rejection reason
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Documents updated successfully! Your application is now pending admin review.",
+      data: rider,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      debug: err.message,
+    });
+  }
+};
+
+// Public version for rejected riders updating documents (no auth required)
+const updateRiderDocumentsPublic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { profilePhoto, licenseFrontPhoto, licenseBackPhoto } = req.body;
+
+    // Find rider by ID
+    const rider = await Rider.findByPk(id);
+
+    if (!rider) {
+      return res.status(404).json({
+        success: false,
+        message: "Rider not found",
+      });
+    }
+
+    // Only rejected or pending riders can update documents
+    if (!["rejected", "pending"].includes(rider.status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Only rejected or pending riders can update documents",
+      });
+    }
+
+    // Update documents and reset status to pending
+    await rider.update({
+      profilePhoto: profilePhoto || rider.profilePhoto,
+      licenseFrontPhoto: licenseFrontPhoto || rider.licenseFrontPhoto,
+      licenseBackPhoto: licenseBackPhoto || rider.licenseBackPhoto,
+      status: "pending", // Reset to pending for re-review
+      rejectionReason: null, // Clear previous rejection reason
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Documents updated successfully! Your application is now pending admin review.",
+      data: rider,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      debug: err.message,
+    });
+  }
+};
+
 module.exports = {
   registerRider,
   getAllRiders,
@@ -808,10 +1042,14 @@ module.exports = {
   updateRiderStatus,
   updateRiderAvailability,
   getRiderProfile,
+  getRiderProfileByEmail,
   getRiderOrders,
   updateOrderStatus,
   updateRiderLocation,
   checkLocationCoverage,
   acceptOrder,
   rejectOrder,
+  resetRejectedRegistration,
+  updateRiderDocuments,
+  updateRiderDocumentsPublic,
 };

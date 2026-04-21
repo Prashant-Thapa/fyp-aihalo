@@ -10,14 +10,14 @@ import io from "socket.io-client";
 const SOCKET_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
-  <div className="bg-white rounded-xl p-6 shadow-sm">
-    <div className="flex items-center gap-4">
+  <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-gray-600 text-sm font-medium">{label}</p>
+        <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+      </div>
       <div className={`p-3 rounded-lg ${color}`}>
         <Icon className="w-6 h-6 text-white" />
-      </div>
-      <div>
-        <p className="text-gray-500 text-sm">{label}</p>
-        <p className="text-2xl font-bold">{value}</p>
       </div>
     </div>
   </div>
@@ -135,11 +135,11 @@ const AdminDashboard = () => {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Welcome back, {user?.name || "Admin"}!
+        <h1 className="text-3xl font-bold text-gray-900">
+          Dashboard
         </h1>
-        <p className="text-gray-500 mt-1">
-          Here's what's happening with your delivery network today.
+        <p className="text-gray-600 mt-1">
+          Overview of your business metrics and activities
         </p>
       </div>
 
@@ -149,13 +149,13 @@ const AdminDashboard = () => {
           icon={MapPin}
           label="Store Locations"
           value={stats.storeLocations}
-          color="bg-[#0B4E3C]"
+          color="bg-blue-500"
         />
         <StatCard
           icon={Package}
           label="Products"
           value={stats.products}
-          color="bg-blue-500"
+          color="bg-green-500"
         />
         <StatCard
           icon={Users}
@@ -172,15 +172,13 @@ const AdminDashboard = () => {
       </div>
 
       {/* Low Stock Alerts Panel */}
-      <div className="bg-white rounded-xl shadow-sm mb-8 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 mb-8 overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <Bell className="w-5 h-5 text-red-600" />
-            </div>
+            <Bell className="w-5 h-5 text-gray-700" />
             <div>
-              <h2 className="text-lg font-semibold text-gray-800">Low Stock Alerts</h2>
-              <p className="text-sm text-gray-500">Products with stock below 20 units</p>
+              <h2 className="text-lg font-semibold text-gray-900">Stock Alerts</h2>
+              <p className="text-sm text-gray-600">Products below 20 units</p>
             </div>
             {unreadAlerts.length > 0 && (
               <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
@@ -191,9 +189,8 @@ const AdminDashboard = () => {
           {unreadAlerts.length > 0 && (
             <button
               onClick={handleDismissAll}
-              className="text-sm text-[#0B4E3C] hover:text-[#0a4534] font-medium flex items-center gap-1 transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
-              <CheckCircle className="w-4 h-4" />
               Dismiss All
             </button>
           )}
@@ -202,48 +199,31 @@ const AdminDashboard = () => {
         <div className="p-6">
           {alertsLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0B4E3C]"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             </div>
           ) : unreadAlerts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-gray-400">
               <CheckCircle className="w-12 h-12 mb-3 text-green-400" />
-              <p className="font-medium text-gray-600">All stocks are healthy!</p>
-              <p className="text-sm">No products below the 20-unit threshold.</p>
+              <p className="font-medium text-gray-600">All stocks are good!</p>
             </div>
           ) : (
             <div className="space-y-3">
               {unreadAlerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-center justify-between p-4 bg-red-50 border border-red-100 rounded-xl transition-all hover:shadow-sm"
+                  className="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <AlertTriangle className="w-5 h-5 text-red-500" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-800">
-                        {alert.productName || alert.product?.name || "Unknown Product"}
-                      </p>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-sm text-red-600 font-medium">
-                          Stock: {alert.currentStock} units
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          Threshold: {alert.threshold} units
-                        </span>
-                        {alert.product?.storeLocation && (
-                          <span className="text-xs text-gray-500">
-                            • {alert.product.storeLocation.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {alert.productName || alert.product?.name || "Unknown Product"}
+                    </p>
+                    <p className="text-sm text-red-600 mt-1">
+                      Stock: {alert.currentStock} units (Threshold: {alert.threshold})
+                    </p>
                   </div>
                   <button
                     onClick={() => handleDismissAlert(alert.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors"
-                    title="Dismiss alert"
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-lg"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -255,29 +235,29 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <a
             href="/admin/store-locations"
-            className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition"
+            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
           >
-            <MapPin className="w-5 h-5 text-[#0B4E3C]" />
-            <span>Add Store Location</span>
+            <MapPin className="w-5 h-5 text-blue-500" />
+            <span className="font-medium text-gray-900">Store Locations</span>
           </a>
           <a
             href="/admin/products"
-            className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition"
+            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
           >
-            <Package className="w-5 h-5 text-blue-500" />
-            <span>Add New Product</span>
+            <Package className="w-5 h-5 text-green-500" />
+            <span className="font-medium text-gray-900">Products</span>
           </a>
           <a
             href="/admin/riders"
-            className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition"
+            className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
           >
             <Users className="w-5 h-5 text-purple-500" />
-            <span>Manage Riders</span>
+            <span className="font-medium text-gray-900">Riders</span>
           </a>
         </div>
       </div>

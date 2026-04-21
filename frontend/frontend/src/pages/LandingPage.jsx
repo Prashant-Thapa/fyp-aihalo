@@ -16,6 +16,8 @@ const LandingPage = () => {
       </div>
 
       {/* Services Section */}
+      <div>
+
       <Services />
 
       {/* Featured Products Section */}
@@ -26,6 +28,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <Footer />
+      </div>
     </div>
   );
 };

@@ -11,26 +11,28 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const { success, message, data } = await loginService(email, password);
+    const result = await loginService(email, password);
 
-    if (!success) {
+    if (!result.success) {
       return res.status(401).json({
         success: false,
-        message,
+        message: result.message,
+        canReRegister: result.canReRegister,
+        rejectionReason: result.rejectionReason,
       });
     }
 
     return res.status(200).json({
       success: true,
-      message,
-      data,
+      message: result.message,
+      data: result.data,
     });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Login controller error:", err.message);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
-      debug: err.message,
+      message: "Internal server error during login",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };

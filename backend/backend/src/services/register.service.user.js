@@ -15,13 +15,13 @@ const registerUserService = async (email, password, name, role = "user") => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = await User.create({ 
-      email, 
-      password: hashedPassword, 
-      role: role, 
-      name 
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      role: role,
+      name,
     });
-    
+
     return {
       success: true,
       message: "User registered successfully",

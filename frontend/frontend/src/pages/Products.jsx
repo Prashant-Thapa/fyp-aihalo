@@ -17,7 +17,14 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 // const API_BASE_URL =
-const API_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5001";
+
+// Helper to build image URL with cache-busting
+const getImageUrl = (imageUrl) => {
+  if (!imageUrl) return null;
+  const base = imageUrl.startsWith("http") ? imageUrl : `${API_BASE_URL}${imageUrl}`;
+  return `${base}?t=${Date.now()}`;
+};
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -447,13 +454,10 @@ const Products = () => {
                     <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                       {product.imageUrl ? (
                         <img
-                          src={
-                            product.imageUrl.startsWith("http")
-                              ? product.imageUrl
-                              : `${API_BASE_URL}${product.imageUrl}`
-                          }
+                          src={getImageUrl(product.imageUrl)}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                          onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'flex'); }}
                         />
                       ) : (
                         <Package className="w-16 h-16 text-gray-300" />

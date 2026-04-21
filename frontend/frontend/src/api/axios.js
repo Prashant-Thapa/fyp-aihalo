@@ -30,11 +30,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    // Only redirect if we have a token (meaning we were authenticated)
+    // Don't redirect for 401 on auth-related endpoints since it's expected
+    const authPaths = ["/login", "/register", "/verify-otp", "/create-password", "/forgot-password", "/reset-password", "/resend-otp"];
+    const isAuthRequest = authPaths.some(path => error.config?.url?.includes(path));
+    
+    if (error.response?.status === 401 && !isAuthRequest) {
+      // Token expired or invalid (and not a login request)
+      const token = localStorage.getItem("token");
+      if (token) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

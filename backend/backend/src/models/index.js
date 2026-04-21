@@ -6,6 +6,8 @@ const Order = require("./order.model");
 const OrderItem = require("./orderItem.model");
 const Cart = require("./cart.model");
 const StockAlert = require("./stockAlert.model");
+const EmailVerificationToken = require("./emailVerificationToken.model");
+const PasswordResetToken = require("./passwordResetToken.model");
 
 // Define associations
 
@@ -69,6 +71,10 @@ Cart.belongsTo(Product, { foreignKey: "productId", as: "product" });
 Product.hasMany(StockAlert, { foreignKey: "productId", as: "stockAlerts" });
 StockAlert.belongsTo(Product, { foreignKey: "productId", as: "product" });
 
+// User <-> PasswordResetToken
+User.hasMany(PasswordResetToken, { foreignKey: "userId", as: "passwordResetTokens" });
+PasswordResetToken.belongsTo(User, { foreignKey: "userId", as: "user" });
+
 module.exports = {
   User,
   StoreLocation,
@@ -78,4 +84,7 @@ module.exports = {
   OrderItem,
   Cart,
   StockAlert,
+  EmailVerificationToken,
+  PasswordResetToken,
 };
+

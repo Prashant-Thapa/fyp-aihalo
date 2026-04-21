@@ -12,6 +12,14 @@ export const getRiderProfile = async () => {
   return response.data;
 };
 
+// Get rider profile by email (public route for rejected riders)
+export const getRiderProfileByEmail = async (email) => {
+  const response = await api.get("/riders/profile-by-email", {
+    params: { email },
+  });
+  return response.data;
+};
+
 // Update rider availability
 export const updateRiderAvailability = async (data) => {
   const response = await api.put("/riders/availability", data);
@@ -31,8 +39,9 @@ export const getRidersByStoreLocation = async (storeLocationId) => {
 };
 
 // Update rider status (admin only)
-export const updateRiderStatus = async (id, status) => {
-  const response = await api.put(`/riders/${id}/status`, { status });
+export const updateRiderStatus = async (id, status, payload = null) => {
+  const data = payload || { status };
+  const response = await api.put(`/riders/${id}/status`, data);
   return response.data;
 };
 
@@ -76,6 +85,35 @@ export const checkLocationCoverage = async (
     storeLocationId,
     latitude,
     longitude,
+  });
+  return response.data;
+};
+
+// Reset rejected registration and allow re-register
+export const resetRejectedRegistration = async (email, password) => {
+  const response = await api.post("/riders/reset-rejected", {
+    email,
+    password,
+  });
+  return response.data;
+};
+
+// Update rider documents (for rejected riders to resubmit)
+export const updateRiderDocuments = async (riderId, profilePhoto, licenseFrontPhoto, licenseBackPhoto) => {
+  const response = await api.put(`/riders/${riderId}/documents`, {
+    profilePhoto,
+    licenseFrontPhoto,
+    licenseBackPhoto,
+  });
+  return response.data;
+};
+
+// Update rider documents without auth (for rejected riders updating profile)
+export const updateRiderDocumentsPublic = async (riderId, profilePhoto, licenseFrontPhoto, licenseBackPhoto) => {
+  const response = await api.put(`/riders/${riderId}/documents-public`, {
+    profilePhoto,
+    licenseFrontPhoto,
+    licenseBackPhoto,
   });
   return response.data;
 };
